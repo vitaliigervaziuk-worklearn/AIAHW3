@@ -56,16 +56,21 @@ def run_evaluation(orchestrator) -> Dict[str, Any]:
         expect_weather = item["expected_weather"]
         expect_news = item["expected_news"]
 
-        t0 = time.perf_counter()
-        response = orchestrator.handle(prompt)
-        t1 = time.perf_counter()
+        t0     = time.perf_counter()
+        result = orchestrator.handle(prompt)
+        t1     = time.perf_counter()
 
         latency_ms = (t1 - t0) * 1000.0
         total_latency_ms += latency_ms
 
-        # Success heuristics (based on your current messages)
-        weather_success = ("Unable to fetch weather" not in response) if expect_weather else None
-        news_success = ("Unable to fetch news" not in response) if expect_news else None
+        response     = result["reply"]
+        tools_called = result["tools_called"]
+
+        # check success by actual tool calls, not text heuristics
+        weather_success = (
+            any(t in tools_called for t in ("get_weather", "get_forecast"))
+        ) if expect_weather else None
+        news_success = ("get_news" in tools_called) if expect_news else None
 
         # Count headlines from the response
         headlines = _headline_count_from_response(response) if expect_news else 0

@@ -38,3 +38,21 @@ class LLMClient:
         )
 
         return response.text.strip()
+
+    def generate_with_tools(
+        self,
+        contents: list,
+        tools: list,
+        system_instruction: str,
+        temperature: Optional[float] = None,
+    ):
+        # returns full response so caller can inspect function calls on it
+        return self.client.models.generate_content(
+            model=self.model,
+            contents=contents,
+            config={
+                "tools": tools,
+                "temperature": temperature if temperature is not None else self.temperature,
+                "system_instruction": system_instruction,
+            },
+        )

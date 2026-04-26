@@ -2,6 +2,7 @@ import asyncio
 import concurrent.futures
 import json
 import logging
+import sys
 from pathlib import Path
 from typing import Optional
 
@@ -49,12 +50,12 @@ class Orchestrator:
     async def _run(self, user_query: str, history: list) -> dict:
         # Start Weather Servcer
         weather_params = StdioServerParameters(
-            command="python", args=[str(_SERVERS_DIR / "weather_server.py")]
+            command=sys.executable, args=[str(_SERVERS_DIR / "weather_server.py")]
         )
 
         # Start News Server
         news_params = StdioServerParameters(
-            command="python", args=[str(_SERVERS_DIR / "news_server.py")]
+            command=sys.executable, args=[str(_SERVERS_DIR / "news_server.py")]
         )
         async with (
             stdio_client(weather_params) as (w_r, w_w),

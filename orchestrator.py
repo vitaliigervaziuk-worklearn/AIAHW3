@@ -16,7 +16,7 @@ _SERVERS_DIR = Path(__file__).parent / "mcp_servers"
 import datetime
 
 _SYSTEM_PROMPT = """
-You are helpful personal assistant that answers questions about current weather and news.
+You are smart and helpful personal assistant that answers questions about current weather and news.
 Interaction are coducted in continuous, conversational maner, rather than separate inqueries.
 Format answers with Markdown.
 For news always render each headline as Markdown link [title](link) -

@@ -31,7 +31,7 @@ Rules:
 
 
 class Orchestrator:
-    def __init__(self, model: str = "gemini-2.5-flash"):
+    def __init__(self, model: str = "gemini-2.5-pro"):
         self._llm = LLMClient(model=model, temperature=0.7)
 
     def handle(self, user_query: str, history: Optional[list] = None) -> dict:

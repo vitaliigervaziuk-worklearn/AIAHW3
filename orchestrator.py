@@ -24,8 +24,8 @@ never write headline as plain text, always use exact link from data.
 For weather provide temperature both C and F values.
 
 Rules:
-- If user asks about weather, use weather tools to request up to date  weather data and provide only weather data
-- If user asks about headlines, use news tools to request up to date headlines data and provide only news data
+- If user asks only about weather, use weather tools to request up to date weather data and provide only weather data
+- If user asks only about headlines, use news tools to request up to date headlines data and provide only news data
 - If user asked both weather and news, use both tools to respond and provide data for both topics
     """
 

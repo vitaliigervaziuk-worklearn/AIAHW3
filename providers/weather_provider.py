@@ -70,7 +70,7 @@ def _geocode_city(city: str) -> Optional[Dict[str, float]]:
     """
     Get Coordinates by the City name.
     """
-    logging.logg
+    logger.info(f">>> _geocode_city {city}")
     # Open-Meteo DB doesn't cover small cities — fall back to Nominatim (OpenStreetMap)
     resp = requests.get(
         NOMINATIM_URL,
@@ -81,6 +81,7 @@ def _geocode_city(city: str) -> Optional[Dict[str, float]]:
     resp.raise_for_status()
     results = resp.json()
     if not results:
+        logger.info(f">>> _geocode_city No result")
         return None
 
     result_content = results[0]

@@ -5,6 +5,7 @@ import openmeteo_requests
 from typing import Any, Dict, List, Optional
 
 GEOCODE_URL = "https://geocoding-api.open-meteo.com/v1/search"
+NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
 WEATHER_URL = "https://api.open-meteo.com/v1/forecast"
 
 # use openmeteo client instead of raw requests, handles response parsing better
@@ -64,22 +65,22 @@ _DAILY_VARS = [
 
 def _geocode_city(city: str) -> Optional[Dict[str, float]]:
     """
-    Get Coordinates by the City name
+    Get Coordinates by the City name.
     """
+    # Open-Meteo DB doesn't cover small cities — fall back to Nominatim (OpenStreetMap)
     resp = requests.get(
-        GEOCODE_URL,
-        params={"name": city, "count": 1, "language": "en", "format": "json"},
+        NOMINATIM_URL,
+        params={"q": city, "format": "json", "limit": 1},
+        headers={"User-Agent": "WeatherAssistant/1.0"},
         timeout=10,
     )
     resp.raise_for_status()
-    data = resp.json()
-
-    results = data.get("results")
+    results = resp.json()
     if not results:
         return None
 
-    r = results[0]
-    return {"lat": r["latitude"], "lon": r["longitude"]}
+    result_content = results[0]
+    return {"lat": float(result_content["lat"]), "lon": float(result_content["lon"])}
 
 
 def _decode_condition(code: int, is_day: int) -> str:

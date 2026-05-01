@@ -3,6 +3,7 @@ import datetime
 import requests
 import openmeteo_requests
 from typing import Any, Dict, List, Optional
+import logging
 
 GEOCODE_URL = "https://geocoding-api.open-meteo.com/v1/search"
 NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
@@ -62,11 +63,14 @@ _DAILY_VARS = [
     "wind_gusts_10m_max",            # 6
 ]
 
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def _geocode_city(city: str) -> Optional[Dict[str, float]]:
     """
     Get Coordinates by the City name.
     """
+    logging.logg
     # Open-Meteo DB doesn't cover small cities — fall back to Nominatim (OpenStreetMap)
     resp = requests.get(
         NOMINATIM_URL,
@@ -81,7 +85,7 @@ def _geocode_city(city: str) -> Optional[Dict[str, float]]:
 
     result_content = results[0]
 
-    print(f">>> _geocode_city {result_content}")
+    logger.info(f">>> _geocode_city {result_content}")
     return {"lat": float(result_content["lat"]), "lon": float(result_content["lon"])}
 
 
@@ -113,6 +117,8 @@ def get_weather(location: str) -> Dict[str, Any]:
     Output:
       - current conditions with temperature, wind, humidity and more
     """
+
+    logger.info(f">>> get_weather {location}")
     location = normalize_location(location)
     coords = _geocode_city(location)
     if not coords:
@@ -132,7 +138,7 @@ def get_weather(location: str) -> Dict[str, Any]:
     is_day       = int(c.Variables(8).Value())
     wind_gusts   = round(c.Variables(7).Value(), 1)
 
-    return {
+    result = {
         "condition":           _decode_condition(weather_code, is_day),
         "temperature_celsius": round(c.Variables(0).Value(), 1),
         "feels_like_celsius":  round(c.Variables(1).Value(), 1),
@@ -143,6 +149,10 @@ def get_weather(location: str) -> Dict[str, Any]:
         "wind_gusts_kmh":      wind_gusts,
         "warnings":            _build_warnings(weather_code, wind_gusts),
     }
+
+    logger.info(f"<<< get_weather {location}")
+
+    return result
 
 
 def get_forecast(location: str, days: int = 7) -> List[Dict[str, Any]]:
@@ -156,7 +166,7 @@ def get_forecast(location: str, days: int = 7) -> List[Dict[str, Any]]:
     Output:
       - list of daily forecasts with condition, temps, precipitation and warnings
     """
-    print(f">>> get_forecast {location}")
+    logger.info(f">>> get_forecast {location}")
     location = normalize_location(location)
     coords = _geocode_city(location)
     if not coords:
@@ -196,7 +206,7 @@ def get_forecast(location: str, days: int = 7) -> List[Dict[str, Any]]:
             "wind_gusts_max_kmh":     gusts,
             "warnings":               _build_warnings(code, gusts),
         })
-    print(f"<<<< get_forecast {forecast}")
+    logger.info(f"<<<< get_forecast {forecast}")
     return forecast
 
 

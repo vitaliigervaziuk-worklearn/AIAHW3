@@ -80,6 +80,8 @@ def _geocode_city(city: str) -> Optional[Dict[str, float]]:
         return None
 
     result_content = results[0]
+
+    print(f">>> _geocode_city {result_content}")
     return {"lat": float(result_content["lat"]), "lon": float(result_content["lon"])}
 
 
@@ -154,6 +156,7 @@ def get_forecast(location: str, days: int = 7) -> List[Dict[str, Any]]:
     Output:
       - list of daily forecasts with condition, temps, precipitation and warnings
     """
+    print(f">>> get_forecast {location}")
     location = normalize_location(location)
     coords = _geocode_city(location)
     if not coords:
@@ -193,7 +196,7 @@ def get_forecast(location: str, days: int = 7) -> List[Dict[str, Any]]:
             "wind_gusts_max_kmh":     gusts,
             "warnings":               _build_warnings(code, gusts),
         })
-
+    print(f"<<<< get_forecast {forecast}")
     return forecast
 
 
